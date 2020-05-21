@@ -10,8 +10,8 @@ with open("Settings.config") as inFile:
 
 settings["launcher path"] = settings["launcher path"].strip()
 settings["process"] = settings["process"].strip()
-settings["launch volume"] = float(settings["launch volume"])/100
-settings["target volume"] = float(settings["target volume"])/100
+settings["launch volume"] = settings["launch volume"]
+settings["target volume"] = settings["target volume"]
 settings["delay"] = int(settings["delay"])
 settings["transition time"] = int(settings["transition time"])
 
@@ -28,7 +28,7 @@ while not processFound:
             volume = session._ctl.QueryInterface(ISimpleAudioVolume)
     time.sleep(1)
 
-volume.SetMasterVolume(settings["launch volume"], None)
+volume.SetMasterVolume(volume_to_range(settings["launch volume"]), None)
 
 if settings["launch volume"] == settings["target volume"]:
     quit()
@@ -42,7 +42,7 @@ for volume_level in range(settings["launch volume"], settings["target volume"], 
     for session in sessions:
         if session.Process and session.Process.name() == settings["process"]:
             volume = session._ctl.QueryInterface(ISimpleAudioVolume)
-            volume.SetMasterVolume(volume_level, None)
+            volume.SetMasterVolume(volume_to_range(volume_level), None)
 
     time.sleep(settings["transition time"] / (settings["target volume"] - settings["launch volume"]))
 
@@ -52,4 +52,10 @@ sessions = AudioUtilities.GetAllSessions()
 for session in sessions:
     if session.Process and session.Process.name() == settings["process"]:
         volume = session._ctl.QueryInterface(ISimpleAudioVolume)
-        volume.SetMasterVolume(settings["target volume"], None)
+        volume.SetMasterVolume(volume_to_range(settings["target volume"]), None)
+
+
+
+def volume_to_range(vol):
+    # Maps input volume from range [0; 100] to [0; 1]
+    return float(vol)/100
