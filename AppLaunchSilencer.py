@@ -13,6 +13,7 @@ settings["process"] = settings["process"].strip()
 settings["launch volume"] = float(settings["launch volume"])/100
 settings["target volume"] = float(settings["target volume"])/100
 settings["delay"] = int(settings["delay"])
+settings["transition time"] = int(settings["transition time"])
 
 # Execute wanted program
 os.startfile(settings["launcher path"])
@@ -29,9 +30,24 @@ while not processFound:
 
 volume.SetMasterVolume(settings["launch volume"], None)
 
+if settings["launch volume"] == settings["target volume"]:
+    quit()
+
 time.sleep(settings["delay"])
 
-# Make sure process wasn't closed while sleeping
+# Gradually turn volume back up
+for volume_level in range(settings["launch volume"], settings["target volume"], 1):
+    # Make sure process wasn't closed while sleeping
+    sessions = AudioUtilities.GetAllSessions()
+    for session in sessions:
+        if session.Process and session.Process.name() == settings["process"]:
+            volume = session._ctl.QueryInterface(ISimpleAudioVolume)
+            volume.SetMasterVolume(volume_level, None)
+
+    time.sleep(settings["transition time"] / (settings["target volume"] - settings["launch volume"]))
+
+
+# Set final volume level. Make sure process wasn't closed while sleeping
 sessions = AudioUtilities.GetAllSessions()
 for session in sessions:
     if session.Process and session.Process.name() == settings["process"]:
