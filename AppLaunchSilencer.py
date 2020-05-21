@@ -4,6 +4,9 @@ import os
 from pycaw.pycaw import AudioUtilities, ISimpleAudioVolume
 import time
 
+def volume_to_range(vol):
+    # Maps input volume from range [0; 100] to [0; 1]
+    return float(vol)/100
 
 with open("Settings.config") as inFile:
     settings = dict([line.split(": ") for line in inFile])
@@ -55,7 +58,3 @@ for session in sessions:
         volume.SetMasterVolume(volume_to_range(settings["target volume"]), None)
 
 
-
-def volume_to_range(vol):
-    # Maps input volume from range [0; 100] to [0; 1]
-    return float(vol)/100
