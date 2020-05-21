@@ -13,8 +13,8 @@ with open("Settings.config") as inFile:
 
 settings["launcher path"] = settings["launcher path"].strip()
 settings["process"] = settings["process"].strip()
-settings["launch volume"] = settings["launch volume"]
-settings["target volume"] = settings["target volume"]
+settings["launch volume"] = int(settings["launch volume"])
+settings["target volume"] = int(settings["target volume"])
 settings["delay"] = int(settings["delay"])
 settings["transition time"] = int(settings["transition time"])
 
